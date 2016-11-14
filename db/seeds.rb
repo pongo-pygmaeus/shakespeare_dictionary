@@ -2,6 +2,7 @@ require 'open-uri'
 
 Work.destroy_all
 Word.destroy_all
+WordsWork.destroy_all
 
 # Get the MIT Complete Works of WS landing page
 doc = Nokogiri::HTML(open(SHAKESPEARE_WORKS_SOURCE))
@@ -42,12 +43,14 @@ Work.all.each do |work|
                   .split
               
   raw_words.each do |raw_word|
-    # Remove possessives
-    raw_word.gsub("'s","")
+    # Remove possessives and conjunctions
+    raw_word.gsub!("'s","")
+    
     word = Word.find_or_create_by(word: raw_word)
     word.increment(:word_count)
     word.save
-    work.words << word
+
+    work.words << word if !work.words.include?(word) 
 
     words_work = WordsWork.find_by(word_id: word.id, work_id: work.id).increment(:word_count)
     words_work.save
