@@ -24,6 +24,7 @@ ActiveRecord::Schema.define(version: 20161114003031) do
     t.integer  "word_count"
     t.datetime "created_at",                   null: false
     t.datetime "updated_at",                   null: false
+    t.index ["word"], name: "index_words_on_word", using: :btree
   end
 
   create_table "words_works", force: :cascade do |t|

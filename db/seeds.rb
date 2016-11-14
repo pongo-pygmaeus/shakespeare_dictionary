@@ -30,11 +30,6 @@ doc.css("table").css("a").each do |link|
   end
 end
 
-modern_definition = "TBD"
-shakespearean_definition = "TBD"
-modern_definition_url = "TBD"
-shakespearean_definition_url = "TBD"
-
 Work.all.each do |work|
 
   p "Seeding words from #{work.name}"
@@ -47,19 +42,17 @@ Work.all.each do |work|
                   .split
               
   raw_words.each do |raw_word|
-
-    word = Word.find_or_create_by(word: raw_word,
-           modern_definition: modern_definition,
-           shakespearean_definition: shakespearean_definition,
-           modern_definition_url: modern_definition_url,
-           shakespearean_definition_url: shakespearean_definition_url)
-
+    # Remove possessives
+    raw_word.gsub("'s","")
+    word = Word.find_or_create_by(word: raw_word)
     word.increment(:word_count)
     word.save
     work.words << word
 
     words_work = WordsWork.find_by(word_id: word.id, work_id: work.id).increment(:word_count)
     words_work.save
+
+    p word
 
   end
 
