@@ -1,6 +1,7 @@
 require 'open-uri'
 
 Work.destroy_all
+Word.destroy_all
 
 # Get the MIT Complete Works of WS landing page
 doc = Nokogiri::HTML(open(SHAKESPEARE_WORKS_SOURCE))
@@ -24,6 +25,43 @@ doc.css("table").css("a").each do |link|
 
     url = "#{SHAKESPEARE_WORKS_SOURCE}/#{url}"
     # Go get the html source of the work
-    Work.create(html: open(url).read, url: url, name: name)
+    work = Work.create(html: open(url).read, url: url, name: name)
+    p "Seeding #{work.name} data"
   end
 end
+
+modern_definition = "TBD"
+shakespearean_definition = "TBD"
+modern_definition_url = "TBD"
+shakespearean_definition_url = "TBD"
+
+Work.all.each do |work|
+
+  p "Seeding words from #{work.name}"
+  html = Nokogiri::HTML(open(work.url))
+  raw_words = html.text
+                  .downcase
+                  .gsub(/[^a-z0-9'\s]/i, '')
+                  .gsub("\n"," ")
+                  .gsub(/\s+/," ")
+                  .split
+              
+  raw_words.each do |raw_word|
+
+    word = Word.find_or_create_by(word: raw_word,
+           modern_definition: modern_definition,
+           shakespearean_definition: shakespearean_definition,
+           modern_definition_url: modern_definition_url,
+           shakespearean_definition_url: shakespearean_definition_url)
+
+    word.increment(:word_count)
+    word.save
+    work.words << word
+
+    words_work = WordsWork.find_by(word_id: word.id, work_id: work.id).increment(:word_count)
+    words_work.save
+
+  end
+
+end
+

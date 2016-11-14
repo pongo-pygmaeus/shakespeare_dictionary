@@ -10,17 +10,38 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161113235759) do
+ActiveRecord::Schema.define(version: 20161114003031) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "works", force: :cascade do |t|
-    t.string   "html"
+  create_table "words", force: :cascade do |t|
+    t.string   "word"
+    t.string   "modern_definition"
+    t.string   "shakespearean_definition"
+    t.string   "modern_definition_url"
+    t.string   "shakespearean_definition_url"
+    t.integer  "word_count"
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
+  end
+
+  create_table "words_works", force: :cascade do |t|
+    t.integer  "word_id"
+    t.integer  "work_id"
+    t.integer  "word_count"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["word_id"], name: "index_words_works_on_word_id", using: :btree
+    t.index ["work_id"], name: "index_words_works_on_work_id", using: :btree
+  end
+
+  create_table "works", force: :cascade do |t|
+    t.string   "html"
     t.string   "name"
     t.string   "url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
 end
