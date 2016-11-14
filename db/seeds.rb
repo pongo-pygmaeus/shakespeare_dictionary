@@ -33,7 +33,7 @@ end
 Work.all.each do |work|
 
   p "Seeding words from #{work.name}"
-  html = Nokogiri::HTML(open(work.url))
+  html = Nokogiri::HTML(work.html)
   raw_words = html.text
                   .downcase
                   .gsub(/[^a-z0-9'\s]/i, '')
@@ -51,9 +51,6 @@ Work.all.each do |work|
 
     words_work = WordsWork.find_by(word_id: word.id, work_id: work.id).increment(:word_count)
     words_work.save
-
-    p word
-
   end
 
 end
